@@ -15,41 +15,20 @@ app.use(compression());
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from frontend build
-app.use(express.static(path.join(__dirname, 'frontend/dist')));
-
-// Specific handling for assets with correct MIME types
-app.get('/assets/*', (req, res) => {
-  const filePath = path.join(__dirname, 'frontend/dist', req.path);
-  
-  console.log('Assets request:', req.path);
-  console.log('Attempting to serve:', filePath);
-  console.log('File exists:', fs.existsSync(filePath));
-  
-  // Check if file exists
-  if (!fs.existsSync(filePath)) {
-    console.log('Asset file not found:', filePath);
-    return res.status(404).send('File not found');
+// Serve static files from frontend build with proper MIME types
+app.use(express.static(path.join(__dirname, 'frontend/dist'), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+    } else if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    } else if (path.endsWith('.woff2')) {
+      res.setHeader('Content-Type', 'font/woff2');
+    } else if (path.endsWith('.woff')) {
+      res.setHeader('Content-Type', 'font/woff');
+    }
   }
-  
-  // Set correct MIME types
-  if (req.path.endsWith('.css')) {
-    res.setHeader('Content-Type', 'text/css');
-  } else if (req.path.endsWith('.js')) {
-    res.setHeader('Content-Type', 'application/javascript');
-  } else if (req.path.endsWith('.woff2')) {
-    res.setHeader('Content-Type', 'font/woff2');
-  } else if (req.path.endsWith('.woff')) {
-    res.setHeader('Content-Type', 'font/woff');
-  }
-  
-  try {
-    res.sendFile(filePath);
-  } catch (error) {
-    console.error('Error serving asset:', error);
-    res.status(500).send('Error serving file');
-  }
-});
+}));
 
 // Cache for gold price (refresh every 30 minutes)
 let goldPriceCache = {
