@@ -18,6 +18,24 @@ app.use(express.json());
 // Serve static files from frontend build
 app.use(express.static(path.join(__dirname, 'frontend/dist')));
 
+// Specific handling for assets with correct MIME types
+app.get('/assets/*', (req, res) => {
+  const filePath = path.join(__dirname, 'frontend/dist', req.path);
+  
+  // Set correct MIME types
+  if (req.path.endsWith('.css')) {
+    res.setHeader('Content-Type', 'text/css');
+  } else if (req.path.endsWith('.js')) {
+    res.setHeader('Content-Type', 'application/javascript');
+  } else if (req.path.endsWith('.woff2')) {
+    res.setHeader('Content-Type', 'font/woff2');
+  } else if (req.path.endsWith('.woff')) {
+    res.setHeader('Content-Type', 'font/woff');
+  }
+  
+  res.sendFile(filePath);
+});
+
 // Cache for gold price (refresh every 30 minutes)
 let goldPriceCache = {
   price: null,
