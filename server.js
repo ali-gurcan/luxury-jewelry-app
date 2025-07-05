@@ -336,7 +336,24 @@ app.get('/api/health', (req, res) => {
 
 // Serve frontend for all other routes
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend/dist/index.html'));
+  const indexPath = path.join(__dirname, 'frontend/dist/index.html');
+  console.log('Attempting to serve:', indexPath);
+  console.log('Directory contents:', __dirname);
+  
+  // Check if file exists
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    console.log('Frontend index.html not found, checking alternatives...');
+    // Try alternative paths or return a simple response
+    res.status(200).json({
+      message: 'Frontend files not found',
+      attempted_path: indexPath,
+      cwd: process.cwd(),
+      dirname: __dirname,
+      api_working: true
+    });
+  }
 });
 
 // Error handling middleware
