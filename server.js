@@ -22,6 +22,16 @@ app.use(express.static(path.join(__dirname, 'frontend/dist')));
 app.get('/assets/*', (req, res) => {
   const filePath = path.join(__dirname, 'frontend/dist', req.path);
   
+  console.log('Assets request:', req.path);
+  console.log('Attempting to serve:', filePath);
+  console.log('File exists:', fs.existsSync(filePath));
+  
+  // Check if file exists
+  if (!fs.existsSync(filePath)) {
+    console.log('Asset file not found:', filePath);
+    return res.status(404).send('File not found');
+  }
+  
   // Set correct MIME types
   if (req.path.endsWith('.css')) {
     res.setHeader('Content-Type', 'text/css');
@@ -33,7 +43,12 @@ app.get('/assets/*', (req, res) => {
     res.setHeader('Content-Type', 'font/woff');
   }
   
-  res.sendFile(filePath);
+  try {
+    res.sendFile(filePath);
+  } catch (error) {
+    console.error('Error serving asset:', error);
+    res.status(500).send('Error serving file');
+  }
 });
 
 // Cache for gold price (refresh every 30 minutes)
