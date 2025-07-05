@@ -85,7 +85,7 @@ function App() {
 
     // Empty stars
     for (let i = 0; i < emptyStars; i++) {
-      stars.push(<FaStar key={`empty-${i}`} className="star star-empty" />)
+      stars.push(<FaRegStar key={`empty-${i}`} className="star star-empty" />)
     }
 
     return stars

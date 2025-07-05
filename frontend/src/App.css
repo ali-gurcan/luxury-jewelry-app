@@ -377,7 +377,9 @@ body {
 }
 
 .star-empty {
-  color: #C0C0C0;
+  color: #ffffff;
+  stroke: #C0C0C0;
+  stroke-width: 1px;
 }
 
 .rating-text {
