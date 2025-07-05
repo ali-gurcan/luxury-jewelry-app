@@ -403,21 +403,38 @@ app.get('/api/image-proxy', async (req, res) => {
 
 // Serve frontend for all other routes
 app.get('*', (req, res) => {
+  console.log('Catch-all route hit for:', req.path);
+  
   const indexPath = path.join(__dirname, 'frontend/dist/index.html');
   console.log('Attempting to serve:', indexPath);
-  console.log('Directory contents:', __dirname);
+  console.log('Current directory:', __dirname);
+  console.log('Directory listing:', fs.readdirSync(__dirname));
+  
+  // Check frontend directory structure
+  const frontendDir = path.join(__dirname, 'frontend');
+  if (fs.existsSync(frontendDir)) {
+    console.log('Frontend dir exists, contents:', fs.readdirSync(frontendDir));
+    const distDir = path.join(frontendDir, 'dist');
+    if (fs.existsSync(distDir)) {
+      console.log('Dist dir exists, contents:', fs.readdirSync(distDir));
+      const assetsDir = path.join(distDir, 'assets');
+      if (fs.existsSync(assetsDir)) {
+        console.log('Assets dir exists, contents:', fs.readdirSync(assetsDir));
+      }
+    }
+  }
   
   // Check if file exists
   if (fs.existsSync(indexPath)) {
     res.sendFile(indexPath);
   } else {
-    console.log('Frontend index.html not found, checking alternatives...');
-    // Try alternative paths or return a simple response
+    console.log('Frontend index.html not found');
     res.status(200).json({
       message: 'Frontend files not found',
       attempted_path: indexPath,
       cwd: process.cwd(),
       dirname: __dirname,
+      directory_listing: fs.readdirSync(__dirname),
       api_working: true
     });
   }
