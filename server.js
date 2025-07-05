@@ -108,12 +108,22 @@ app.get('/api/products', async (req, res) => {
     } = req.query;
     
     // Add calculated price and star rating to each product
-    let enrichedProducts = products.map(product => ({
-      ...product,
-      price: parseFloat(calculatePrice(product.popularityScore, product.weight, goldPrice)),
-      starRating: parseFloat(convertPopularityToStars(product.popularityScore)),
-      priceFormatted: `$${calculatePrice(product.popularityScore, product.weight, goldPrice)}`
-    }));
+    let enrichedProducts = products.map(product => {
+      // Convert image URLs to use proxy
+      const proxiedImages = {};
+      Object.keys(product.images).forEach(color => {
+        const originalUrl = product.images[color];
+        proxiedImages[color] = `/api/image-proxy?url=${encodeURIComponent(originalUrl)}`;
+      });
+      
+      return {
+        ...product,
+        images: proxiedImages,
+        price: parseFloat(calculatePrice(product.popularityScore, product.weight, goldPrice)),
+        starRating: parseFloat(convertPopularityToStars(product.popularityScore)),
+        priceFormatted: `$${calculatePrice(product.popularityScore, product.weight, goldPrice)}`
+      };
+    });
     
     // Store original count before filtering
     const originalCount = enrichedProducts.length;
@@ -332,6 +342,38 @@ app.get('/api/health', (req, res) => {
     message: 'Product Listing API is running',
     timestamp: new Date().toISOString()
   });
+});
+
+// Image proxy endpoint to bypass CORS issues
+app.get('/api/image-proxy', async (req, res) => {
+  try {
+    const { url } = req.query;
+    
+    if (!url) {
+      return res.status(400).json({ error: 'URL parameter required' });
+    }
+    
+    // Validate URL is from Shopify CDN
+    if (!url.includes('cdn.shopify.com')) {
+      return res.status(400).json({ error: 'Only Shopify CDN URLs allowed' });
+    }
+    
+    const response = await axios.get(url, {
+      responseType: 'stream',
+      timeout: 10000
+    });
+    
+    // Set appropriate headers
+    res.setHeader('Content-Type', response.headers['content-type']);
+    res.setHeader('Cache-Control', 'public, max-age=86400'); // 24 hours
+    
+    // Pipe the image data
+    response.data.pipe(res);
+    
+  } catch (error) {
+    console.error('Image proxy error:', error.message);
+    res.status(500).json({ error: 'Failed to fetch image' });
+  }
 });
 
 // Serve frontend for all other routes
