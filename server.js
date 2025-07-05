@@ -15,9 +15,22 @@ app.use(compression());
 app.use(cors());
 app.use(express.json());
 
+// Debug middleware to log all requests
+app.use((req, res, next) => {
+  console.log(`Request: ${req.method} ${req.path}`);
+  if (req.path.includes('assets')) {
+    console.log('Asset request detected:', req.path);
+    const fullPath = path.join(__dirname, 'frontend/dist', req.path);
+    console.log('Full path:', fullPath);
+    console.log('File exists:', fs.existsSync(fullPath));
+  }
+  next();
+});
+
 // Serve static files from frontend build with proper MIME types
 app.use(express.static(path.join(__dirname, 'frontend/dist'), {
   setHeaders: (res, path) => {
+    console.log('Serving static file:', path);
     if (path.endsWith('.css')) {
       res.setHeader('Content-Type', 'text/css');
     } else if (path.endsWith('.js')) {
