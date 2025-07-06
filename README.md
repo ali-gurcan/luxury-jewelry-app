@@ -37,8 +37,11 @@ npm start
 ## 📊 API Endpoints
 
 - `GET /api/products` - All products with calculated prices
-- `GET /api/products?minPrice=100&maxPrice=500` - Filtered products
+- `GET /api/products?minPrice=100&maxPrice=500&sortBy=price&sortOrder=desc` - Filtered & sorted products
+- `GET /api/products/filters` - Available filter options and ranges
+- `GET /api/products/:index` - Single product by index (0-based)
 - `GET /api/gold-price` - Current gold price per gram
+- `GET /api/image-proxy?url=<encoded_url>` - Image proxy for external URLs
 - `GET /api/health` - Server health check
 
 ## 🧮 Price Formula
