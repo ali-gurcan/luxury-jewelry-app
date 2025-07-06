@@ -18,6 +18,7 @@ function App() {
   const [goldPrice, setGoldPrice] = useState(null)
   const [selectedColors, setSelectedColors] = useState({})
   const [sortOption, setSortOption] = useState('name-asc')
+  const [isFirstLoad, setIsFirstLoad] = useState(true)
 
   useEffect(() => {
     fetchProducts()
@@ -25,7 +26,10 @@ function App() {
 
   const fetchProducts = async () => {
     try {
-      setLoading(true)
+      // Only show loading animation on first load, not for sorting
+      if (isFirstLoad) {
+        setLoading(true)
+      }
       
       // Parse combined sort option
       const [sortBy, sortOrder] = sortOption.split('-')
@@ -43,12 +47,15 @@ function App() {
         setProducts(response.data.products)
         setGoldPrice(response.data.goldPrice)
         
-        // Initialize selected colors (default to 'yellow')
-        const initialColors = {}
-        response.data.products.forEach((_, index) => {
-          initialColors[index] = 'yellow'
-        })
-        setSelectedColors(initialColors)
+        // Initialize selected colors (default to 'yellow') only on first load
+        if (isFirstLoad) {
+          const initialColors = {}
+          response.data.products.forEach((_, index) => {
+            initialColors[index] = 'yellow'
+          })
+          setSelectedColors(initialColors)
+          setIsFirstLoad(false)
+        }
       } else {
         setError('Failed to load products')
       }
@@ -56,7 +63,9 @@ function App() {
       setError('Failed to connect to the server')
       console.error('Error fetching products:', err)
     } finally {
-      setLoading(false)
+      if (isFirstLoad) {
+        setLoading(false)
+      }
     }
   }
 
