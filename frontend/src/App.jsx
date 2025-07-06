@@ -19,14 +19,21 @@ function App() {
   const [selectedColors, setSelectedColors] = useState({})
   const [sortOption, setSortOption] = useState('name-asc')
   const [isFirstLoad, setIsFirstLoad] = useState(true)
+  const [cachedProducts, setCachedProducts] = useState({})
+  const [isCacheReady, setIsCacheReady] = useState(false)
 
   useEffect(() => {
-    fetchProducts()
+    if (isFirstLoad) {
+      fetchProducts()
+    } else if (isCacheReady) {
+      // Use cached data for sorting
+      applySortingFromCache()
+    }
   }, [sortOption])
 
   const fetchProducts = async () => {
     try {
-      // Parse combined sort option
+      // Parse combined sort option for initial load
       const [sortBy, sortOrder] = sortOption.split('-')
       
       const response = await axios.get('/api/products', {
@@ -37,31 +44,90 @@ function App() {
       })
       
       if (response.data.success) {
-        console.log('API Response:', response.data);
-        console.log('Products:', response.data.products);
+        console.log('Initial API Response:', response.data);
         setProducts(response.data.products)
         setGoldPrice(response.data.goldPrice)
         
-        // Initialize selected colors (default to 'yellow') only on first load
-        if (isFirstLoad) {
-          const initialColors = {}
-          response.data.products.forEach((_, index) => {
-            initialColors[index] = 'yellow'
-          })
-          setSelectedColors(initialColors)
-          setIsFirstLoad(false)
-        }
+        // Initialize selected colors (default to 'yellow')
+        const initialColors = {}
+        response.data.products.forEach((_, index) => {
+          initialColors[index] = 'yellow'
+        })
+        setSelectedColors(initialColors)
+        setIsFirstLoad(false)
+        setLoading(false)
+        
+        // Prefetch all sorting combinations
+        prefetchAllSortings()
       } else {
         setError('Failed to load products')
+        setLoading(false)
       }
     } catch (err) {
       setError('Failed to connect to the server')
       console.error('Error fetching products:', err)
-    } finally {
-      // Only set loading to false on first load
-      if (isFirstLoad) {
-        setLoading(false)
+      setLoading(false)
+    }
+  }
+
+  const prefetchAllSortings = async () => {
+    const sortingOptions = [
+      'name-asc', 'name-desc',
+      'price-asc', 'price-desc', 
+      'popularity-asc', 'popularity-desc'
+    ]
+    
+    console.log('🚀 Prefetching all sorting combinations...')
+    const cache = {}
+    
+    try {
+      // Fetch all sorting combinations in parallel
+      const promises = sortingOptions.map(async (option) => {
+        const [sortBy, sortOrder] = option.split('-')
+        const response = await axios.get('/api/products', {
+          params: { sortBy, sortOrder }
+        })
+        return { option, data: response.data.products }
+      })
+      
+      const results = await Promise.all(promises)
+      
+      // Build cache object
+      results.forEach(({ option, data }) => {
+        cache[option] = data
+      })
+      
+      setCachedProducts(cache)
+      setIsCacheReady(true)
+      console.log('✅ All sorting combinations cached:', Object.keys(cache))
+    } catch (err) {
+      console.error('Failed to prefetch sorting options:', err)
+      // If prefetch fails, we'll continue with normal API calls
+    }
+  }
+
+  const applySortingFromCache = () => {
+    if (cachedProducts[sortOption]) {
+      console.log('📦 Using cached data for:', sortOption)
+      setProducts(cachedProducts[sortOption])
+    } else {
+      console.log('⚠️ Cache miss for:', sortOption, 'falling back to API')
+      fetchProductsFromAPI()
+    }
+  }
+
+  const fetchProductsFromAPI = async () => {
+    try {
+      const [sortBy, sortOrder] = sortOption.split('-')
+      const response = await axios.get('/api/products', {
+        params: { sortBy, sortOrder }
+      })
+      
+      if (response.data.success) {
+        setProducts(response.data.products)
       }
+    } catch (err) {
+      console.error('Error fetching from API:', err)
     }
   }
 
