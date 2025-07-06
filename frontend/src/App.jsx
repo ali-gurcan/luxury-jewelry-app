@@ -13,6 +13,7 @@ import './App.css'
 
 function App() {
   const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [goldPrice, setGoldPrice] = useState(null)
   const [selectedColors, setSelectedColors] = useState({})
@@ -56,6 +57,11 @@ function App() {
     } catch (err) {
       setError('Failed to connect to the server')
       console.error('Error fetching products:', err)
+    } finally {
+      // Only set loading to false on first load
+      if (isFirstLoad) {
+        setLoading(false)
+      }
     }
   }
 
@@ -109,6 +115,17 @@ function App() {
   }
 
 
+
+  if (loading) {
+    return (
+      <div className="app">
+        <div className="loading">
+          <div className="loading-spinner"></div>
+          <p>Loading beautiful jewelry...</p>
+        </div>
+      </div>
+    )
+  }
 
   if (error) {
     return (
