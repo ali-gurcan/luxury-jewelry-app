@@ -13,7 +13,6 @@ import './App.css'
 
 function App() {
   const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [goldPrice, setGoldPrice] = useState(null)
   const [selectedColors, setSelectedColors] = useState({})
@@ -26,11 +25,6 @@ function App() {
 
   const fetchProducts = async () => {
     try {
-      // Only show loading animation on first load, not for sorting
-      if (isFirstLoad) {
-        setLoading(true)
-      }
-      
       // Parse combined sort option
       const [sortBy, sortOrder] = sortOption.split('-')
       
@@ -62,10 +56,6 @@ function App() {
     } catch (err) {
       setError('Failed to connect to the server')
       console.error('Error fetching products:', err)
-    } finally {
-      if (isFirstLoad) {
-        setLoading(false)
-      }
     }
   }
 
@@ -118,16 +108,7 @@ function App() {
     return colorHexes[color] || '#000000'
   }
 
-  if (loading) {
-    return (
-      <div className="app">
-        <div className="loading">
-          <div className="loading-spinner"></div>
-          <p>Loading beautiful jewelry...</p>
-        </div>
-      </div>
-    )
-  }
+
 
   if (error) {
     return (
