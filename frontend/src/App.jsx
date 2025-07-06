@@ -13,7 +13,7 @@ import './App.css'
 
 function App() {
   const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [goldPrice, setGoldPrice] = useState(null)
   const [selectedColors, setSelectedColors] = useState({})
