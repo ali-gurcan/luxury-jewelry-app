@@ -1,40 +1,55 @@
-# Luxury Engagement Rings - Product Listing Application
+# 💎 Luxury Engagement Rings - Product Listing Application
 
-A modern full-stack web application showcasing a collection of luxury engagement rings with dynamic pricing based on real-time gold prices.
+A full-stack luxury jewelry e-commerce application showcasing engagement rings with dynamic pricing, interactive features, and modern UI/UX design.
+
+🌐 **Live Demo**: [https://luxury-jewelry-app.vercel.app/](https://luxury-jewelry-app.vercel.app/)
 
 ## 🌟 Features
 
-### Backend API
-- **RESTful API** serving product data from JSON file
-- **Dynamic Price Calculation** using the formula: `Price = (popularityScore + 1) × weight × goldPrice`
-- **Real-time Gold Price Integration** from live market data
-- **Advanced Filtering** by price range and popularity score
-- **Caching System** for optimized performance
-- **Error Handling** with graceful fallbacks
+### 🔧 Backend Features
+- **RESTful API** with Express.js server
+- **Dynamic Price Calculation** using real-time gold prices
+- **Real-time Gold Price Integration** with caching (30-minute intervals)
+- **Advanced Filtering & Sorting** by price range and popularity
+- **Image Proxy Service** to handle CORS issues with external CDNs
+- **Comprehensive Error Handling** with graceful fallbacks
+- **Security Headers** and CORS configuration
 
-### Frontend Interface
-- **Responsive Carousel** with swipe and arrow navigation
-- **Interactive Color Picker** for different gold types (Yellow, Rose, White)
-- **Star Rating System** converted from popularity scores (0-100% to 0-5 stars)
-- **Modern UI/UX** with smooth animations and transitions
-- **Mobile-First Design** optimized for all device sizes
+### 🎨 Frontend Features
+- **Responsive Carousel** with Swiper.js (4 products on desktop)
+- **Interactive Color Picker** for gold types (Yellow, Rose, White)
+- **Star Rating System** with elegant styling
+- **Modern Minimalist Design** with luxury aesthetics
+- **Mobile-First Responsive Design**
+- **Smooth Animations** and hover effects
 - **Loading States** and error handling
 
 ## 🛠️ Technology Stack
 
 ### Backend
-- **Node.js** with Express.js
-- **Axios** for external API calls
-- **CORS** for cross-origin requests
-- **Helmet** for security
-- **Compression** for performance
+- **Node.js** - Runtime environment
+- **Express.js** - Web framework
+- **Axios** - HTTP client for external APIs
+- **Helmet** - Security middleware
+- **CORS** - Cross-origin resource sharing
+- **Compression** - Response compression
 
 ### Frontend
-- **React 19** with hooks
-- **Vite** for fast development and building
-- **Swiper.js** for carousel functionality
-- **React Icons** for UI icons
-- **Modern CSS** with Flexbox and Grid
+- **React 19** - Frontend framework
+- **Vite** - Build tool and development server
+- **Swiper.js** - Modern carousel/slider library
+- **React Icons** - Icon library (Font Awesome)
+- **Modern CSS** - Flexbox, Grid, and animations
+
+### Fonts & Design
+- **Avenir** - Primary font family
+- **Montserrat** - Secondary font family
+- **Custom Color Palette** - Gold (#F0D49E), Rose (#E1A4A9), White (#D9D9D9)
+
+### Deployment
+- **Vercel** - Hosting platform
+- **Git** - Version control
+- **GitHub** - Repository hosting
 
 ## 🚀 Quick Start
 
@@ -46,11 +61,11 @@ A modern full-stack web application showcasing a collection of luxury engagement
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd product-listing-app
+   git clone https://github.com/ali-gurcan/luxury-jewelry-app.git
+   cd luxury-jewelry-app
    ```
 
-2. **Install backend dependencies**
+2. **Install dependencies**
    ```bash
    npm install
    ```
@@ -62,13 +77,9 @@ A modern full-stack web application showcasing a collection of luxury engagement
    cd ..
    ```
 
-4. **Build the frontend**
+4. **Build and start the application**
    ```bash
-   npm run build:frontend
-   ```
-
-5. **Start the application**
-   ```bash
+   npm run vercel-build
    npm start
    ```
 
@@ -95,16 +106,56 @@ Frontend will be available at `http://localhost:5173` with API proxy to backend.
 
 ### Products
 - `GET /api/products` - Get all products with calculated prices
+  ```json
+  {
+    "products": [
+      {
+        "name": "Solitaire Engagement Ring",
+        "popularityScore": 0.85,
+        "weight": 2.1,
+        "price": 378.00,
+        "priceFormatted": "$378.00",
+        "starRating": 4.3,
+        "images": {
+          "yellow": "https://...",
+          "rose": "https://...",
+          "white": "https://..."
+        }
+      }
+    ]
+  }
+  ```
+
 - `GET /api/products?minPrice=100&maxPrice=500` - Get filtered products
+- `GET /api/products?minPopularity=0.5&maxPopularity=1.0` - Filter by popularity
+- `GET /api/products?sortBy=price&order=asc` - Sort products
 - `GET /api/products/:index` - Get single product by index
 
 ### Gold Price
 - `GET /api/gold-price` - Get current gold price per gram
+  ```json
+  {
+    "goldPrice": 65.23,
+    "currency": "USD",
+    "unit": "gram",
+    "lastUpdated": "2024-01-01T12:00:00Z"
+  }
+  ```
+
+### Image Proxy
+- `GET /api/image-proxy?url=<encoded_url>` - Proxy external images to bypass CORS
 
 ### Health Check
 - `GET /api/health` - Server health status
+  ```json
+  {
+    "status": "healthy",
+    "timestamp": "2024-01-01T12:00:00Z",
+    "uptime": "2h 30m"
+  }
+  ```
 
-## 🧮 Price Calculation
+## 🧮 Price Calculation Formula
 
 The application calculates product prices using real-time gold prices:
 
@@ -112,41 +163,49 @@ The application calculates product prices using real-time gold prices:
 Price = (popularityScore + 1) × weight × goldPrice
 ```
 
-Where:
+**Where:**
 - `popularityScore`: Product popularity (0.0 to 1.0)
 - `weight`: Product weight in grams
 - `goldPrice`: Current gold price per gram in USD
 
+**Example:**
+- Popularity: 0.85
+- Weight: 2.1g
+- Gold Price: $65/gram
+- **Final Price:** (0.85 + 1) × 2.1 × 65 = **$252.53**
+
 ## 🎨 Design Features
 
 ### Color Picker
-- **Three gold types**: Yellow Gold, Rose Gold, White Gold
+- **Three gold types**: Yellow Gold (#E6CA97), Rose Gold (#E1A4A9), White Gold (#D9D9D9)
 - **Visual swatches** with gradient backgrounds
-- **Active state indicators** with animations
-- **Accessibility support** with ARIA labels
+- **Active state indicators** with smooth animations
+- **Accessibility support** with ARIA labels and tooltips
 
 ### Star Rating System
-- **Popularity score conversion**: Percentage to 5-star rating
-- **Visual indicators**: Full stars, half stars, empty stars
-- **Decimal precision**: Displayed to 1 decimal place
+- **Popularity conversion**: 0-100% mapped to 0-5 stars
+- **Visual indicators**: Full stars, half stars, empty stars with golden outline
+- **Decimal precision**: Displayed to 1 decimal place (e.g., 4.3/5)
 
 ### Responsive Carousel
-- **Mobile swipe support** with touch gestures
-- **Desktop navigation** with arrow buttons
-- **Automatic pagination** with dot indicators
-- **Breakpoint optimization** for different screen sizes
+- **Desktop**: 4 products visible with navigation arrows
+- **Tablet**: 3 products visible
+- **Mobile**: 2 products visible with touch swipe
+- **Scrollbar**: Horizontal scrollbar for navigation
+- **Smooth transitions** and hover effects
 
 ## 🔧 Configuration
 
 ### Gold Price API
-The application uses `metals.live` API for real-time gold prices. You can modify the gold price source in `server.js`:
+The application uses `metals.live` API for real-time gold prices with 30-minute caching:
 
 ```javascript
-const response = await axios.get('https://api.metals.live/v1/spot/gold');
+const GOLD_PRICE_API = 'https://api.metals.live/v1/spot/gold';
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
 ```
 
 ### Product Data
-Products are loaded from `products.json`. You can modify this file to add or update products:
+Products are loaded from `products.json`. Structure:
 
 ```json
 {
@@ -154,93 +213,117 @@ Products are loaded from `products.json`. You can modify this file to add or upd
   "popularityScore": 0.85,
   "weight": 2.1,
   "images": {
-    "yellow": "image_url",
-    "rose": "image_url", 
-    "white": "image_url"
+    "yellow": "https://shopify-cdn-url/yellow-gold-ring.jpg",
+    "rose": "https://shopify-cdn-url/rose-gold-ring.jpg",
+    "white": "https://shopify-cdn-url/white-gold-ring.jpg"
   }
 }
 ```
 
 ## 📱 Responsive Design
 
-The application is optimized for:
-- **Mobile devices** (320px and up)
-- **Tablets** (768px and up)
-- **Desktop** (1024px and up)
-- **Large screens** (1400px and up)
+### Breakpoints
+- **Mobile**: 320px - 767px (2 products)
+- **Tablet**: 768px - 1023px (3 products)
+- **Desktop**: 1024px - 1399px (4 products)
+- **Large Desktop**: 1400px+ (4 products, larger images)
+
+### Mobile Optimizations
+- Touch-friendly swipe gestures
+- Optimized image sizes
+- Simplified navigation
+- Responsive typography
 
 ## 🚀 Deployment
 
+### Vercel Configuration
+```json
+{
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/server.js"
+    }
+  ]
+}
+```
+
 ### Production Build
 ```bash
-npm run build:frontend
-npm start
+npm run vercel-build  # Builds frontend
+npm start            # Starts production server
 ```
 
 ### Environment Variables
 - `PORT` - Server port (default: 3000)
 - `NODE_ENV` - Environment mode
 
-### Hosting Platforms
-The application is ready for deployment on:
-- **Heroku**
-- **Vercel**
-- **Netlify**
-- **DigitalOcean App Platform**
+## 🔒 Security Features
 
-### Deployment Steps
-
-#### Heroku
-1. Create a new Heroku app
-2. Add Node.js buildpack
-3. Set environment variables if needed
-4. Deploy via Git or GitHub integration
-
-#### Vercel
-1. Connect GitHub repository
-2. Set build command: `npm run build:frontend`
-3. Set output directory: `frontend/dist`
-4. Deploy automatically on push
-
-## 🔍 Performance Optimizations
-
-- **Image lazy loading** for better performance
-- **Gold price caching** (30-minute intervals)
-- **Gzip compression** for smaller payload sizes
-- **Code splitting** with dynamic imports
-- **Optimized bundle size** with Vite
-
-## 🛡️ Security Features
-
-- **Helmet.js** for security headers
-- **CORS** configuration
+### Backend Security
+- **Helmet.js** - Security headers
+- **CORS** - Cross-origin resource sharing
 - **Input validation** and sanitization
-- **Error handling** without sensitive data exposure
+- **Error handling** without exposing sensitive data
 
-## 🧪 Testing
+### Frontend Security
+- **Content Security Policy** headers
+- **XSS protection** through React's built-in sanitization
+- **HTTPS enforcement** in production
 
-The application includes:
-- **Error boundary** handling
-- **Loading states** for better UX
-- **Fallback mechanisms** for API failures
-- **Responsive testing** across devices
+## 📁 Project Structure
 
-## 📄 License
+```
+luxury-jewelry-app/
+├── 📁 frontend/              # React frontend
+│   ├── 📁 src/
+│   │   ├── App.jsx          # Main React component
+│   │   ├── App.css          # Styling
+│   │   └── main.jsx         # Entry point
+│   ├── 📁 public/           # Static assets
+│   └── package.json         # Frontend dependencies
+├── 📁 Fonts/                # Custom fonts
+├── products.json            # Product data
+├── server.js               # Express server
+├── package.json            # Backend dependencies
+├── vercel.json             # Vercel configuration
+└── README.md               # This file
+```
 
-This project is licensed under the MIT License.
+## 🎯 Key Achievements
+
+- ✅ **Full-stack application** with modern tech stack
+- ✅ **Real-time gold pricing** with caching
+- ✅ **Responsive design** for all devices
+- ✅ **Interactive UI** with smooth animations
+- ✅ **Production deployment** on Vercel
+- ✅ **SEO-friendly** with proper meta tags
+- ✅ **Performance optimized** with compression and caching
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+2. Create a feature branch: `git checkout -b feature/new-feature`
+3. Commit your changes: `git commit -m 'Add new feature'`
+4. Push to the branch: `git push origin feature/new-feature`
+5. Submit a pull request
 
-## 📞 Support
+## 📄 License
 
-For questions or issues, please create an issue in the repository or contact the development team.
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 👨‍💻 Author
+
+**Ali Gürcan**
+- GitHub: [@ali-gurcan](https://github.com/ali-gurcan)
+- Email: m.aligurcan@outlook.com
 
 ---
 
-**Made with ❤️ for luxury jewelry enthusiasts** 
+**Built with ❤️ using React, Node.js, and modern web technologies** 
