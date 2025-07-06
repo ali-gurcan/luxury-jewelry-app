@@ -59,5 +59,6 @@ Price = (popularityScore + 1) × weight × goldPrice
 ## 👨‍💻 Author
 
 **Ali Gürcan**  
+🌐 Website: [aligurcan.com](https://www.aligurcan.com/)  
 GitHub: [@ali-gurcan](https://github.com/ali-gurcan)  
 Email: m.aligurcan@outlook.com 
