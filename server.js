@@ -43,11 +43,11 @@ app.use(express.static(path.join(__dirname, 'frontend/dist'), {
   }
 }));
 
-// Cache for gold price (refresh every 30 minutes)
+// Cache for gold price (refresh every 6 hours)
 let goldPriceCache = {
-  price: null,
+  price: null, // Will be fetched from real-time API
   lastUpdated: null,
-  CACHE_DURATION: 30 * 60 * 1000 // 30 minutes
+  CACHE_DURATION: 6 * 60 * 60 * 1000 // 6 hours
 };
 
 // Function to get real-time gold price
@@ -61,26 +61,36 @@ async function getGoldPrice() {
   }
 
   try {
-    // Using metals-api.com for real-time gold price (free tier)
-    // You can replace this with any other gold price API
-    const response = await axios.get('https://api.metals.live/v1/spot/gold', {
+    // Using gold-api.com - Free, reliable, and accurate
+    const response = await axios.get('https://api.gold-api.com/price/XAU', {
       timeout: 5000
     });
     
-    const goldPricePerOunce = response.data.price;
-    const goldPricePerGram = goldPricePerOunce / 31.1035; // Convert from ounce to gram
-    
-    // Update cache
-    goldPriceCache.price = goldPricePerGram;
-    goldPriceCache.lastUpdated = now;
-    
-    return goldPricePerGram;
+    if (response.data && response.data.price) {
+      // API returns price per troy ounce in USD
+      const goldPricePerOunce = response.data.price;
+      const goldPricePerGram = goldPricePerOunce / 31.1035; // Convert from ounce to gram
+      
+      // Update cache
+      goldPriceCache.price = goldPricePerGram;
+      goldPriceCache.lastUpdated = now;
+      
+      console.log(`💰 Real-time gold price: $${goldPricePerOunce.toFixed(2)} per ounce = $${goldPricePerGram.toFixed(2)} per gram`);
+      console.log(`🕒 Last updated: ${response.data.updatedAtReadable || 'recently'}`);
+      
+      return goldPricePerGram;
+    } else {
+      throw new Error('Invalid response format from gold API');
+    }
   } catch (error) {
-    console.warn('Failed to fetch real-time gold price:', error.message);
-    // Fallback to approximate current gold price per gram in USD
-    const fallbackPrice = 65.0; // Approximate gold price per gram
+    console.warn('Gold API failed:', error.message);
+    
+    // Fallback to current market price
+    const fallbackPrice = 107.5; // Current market price per gram (based on $3340 per ounce)
     goldPriceCache.price = fallbackPrice;
     goldPriceCache.lastUpdated = now;
+    
+    console.log(`💰 Using fallback price: $${fallbackPrice} per gram`);
     return fallbackPrice;
   }
 }

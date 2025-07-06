@@ -379,9 +379,7 @@ body {
 }
 
 .star-empty {
-  color: #ffffff;
-  -webkit-text-stroke: 1px #F0D49E;
-  text-stroke: 1px #F0D49E;
+  color: #E5E5E5;
 }
 
 .rating-text {
