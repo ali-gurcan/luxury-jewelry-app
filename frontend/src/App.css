@@ -378,8 +378,8 @@ body {
 
 .star-empty {
   color: #ffffff;
-  stroke: #F0D49E;
-  stroke-width: 1px;
+  -webkit-text-stroke: 1px #F0D49E;
+  text-stroke: 1px #F0D49E;
 }
 
 .rating-text {
